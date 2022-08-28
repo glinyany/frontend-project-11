@@ -9,6 +9,7 @@ publish:
 
 build:
 	npm run build
+
 serve:
 	npx webpack serve
 
