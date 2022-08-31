@@ -2,7 +2,8 @@
 [![eslint](https://github.com/glinyany/frontend-project-11/actions/workflows/linter-check.yml/badge.svg?branch=main&event=push)](https://github.com/glinyany/frontend-project-11/actions/workflows/linter-check.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/eac458a154e53b79c096/maintainability)](https://codeclimate.com/github/glinyany/frontend-project-11/maintainability)
 
-# 🚀 [RSS Reader] Third written Project on my Hexlet Course 🚀
+# 🚀 [RSS Reader] 
+# Third written Project on my Hexlet Course
 
 # Description
 
