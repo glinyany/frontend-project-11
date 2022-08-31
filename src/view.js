@@ -15,7 +15,6 @@ const renderErrors = (input, feedback, errorType, i18n) => {
 };
 
 export default (state, path, i18next, { input, submitBtn, feedback }) => {
-  // const { input, submitBtn, feedback } = elements;
 
   const clearInputField = () => {
     input.value = '';

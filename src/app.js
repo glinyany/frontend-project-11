@@ -5,6 +5,30 @@ import axios from 'axios';
 import view from './view';
 import ru from './locales/ru.js';
 import 'bootstrap';
+import _ from 'lodash';
+
+const makeRequest = (url) => {
+  const encodedUrl = encodeURIComponent(url);
+  const proxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodedUrl}`;
+
+  return axios.get(proxy)
+    .then(({ data }) => data.contents)
+    .catch(() => { throw Error('errors.request'); });
+};
+
+const createFeed = (watchedState) => {
+  const feedId = _.uniqueId('feed_');
+
+  const feed = {
+    id: feedId,
+    title: 'title',
+    description: 'desc',
+    link: watchedState.formState.inputValue,
+  };
+  console.log("FEED:", feed);
+  watchedState.feeds.push(feed);
+  // POSTS
+};
 
 export default () => {
   i18next.init({
@@ -22,7 +46,7 @@ export default () => {
   const state = {
     formState: {
       inputValue: '',
-      isValid: true,
+      isValid: true, // unused rn
     },
     formProcess: {
       status: null,
@@ -53,7 +77,8 @@ export default () => {
       watchedState.formState.inputValue = inputValue;
       watchedState.formProcess.error = 'null';
       watchedState.formProcess.status = 'working';
-      console.log('::Validation Success!::', state);
+
+      createFeed(watchedState);
       // get new feed / add new feed
     }).catch((err) => {  
       switch (err.type) {
