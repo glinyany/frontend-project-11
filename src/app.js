@@ -4,30 +4,19 @@ import i18next from 'i18next';
 import axios from 'axios';
 import view from './view';
 import ru from './locales/ru.js';
+import parser from './parser.js';
 import 'bootstrap';
-import _ from 'lodash';
 
 const makeRequest = (url) => {
   const encodedUrl = encodeURIComponent(url);
   const proxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodedUrl}`;
 
   return axios.get(proxy)
-    .then(({ data }) => data.contents)
+    .then(({ data }) => {
+      console.log("$$$", data.contents);
+      return data.contents;
+    })
     .catch(() => { throw Error('errors.request'); });
-};
-
-const createFeed = (watchedState) => {
-  const feedId = _.uniqueId('feed_');
-
-  const feed = {
-    id: feedId,
-    title: 'title',
-    description: 'desc',
-    link: watchedState.formState.inputValue,
-  };
-  console.log("FEED:", feed);
-  watchedState.feeds.push(feed);
-  // POSTS
 };
 
 export default () => {
@@ -77,10 +66,16 @@ export default () => {
       watchedState.formState.inputValue = inputValue;
       watchedState.formProcess.error = 'null';
       watchedState.formProcess.status = 'working';
-
-      createFeed(watchedState);
-      // get new feed / add new feed
-    }).catch((err) => {  
+    })
+    .then(() => makeRequest(inputValue))
+    .then((response) => parser(response))
+    .then((parserResonse) => {
+      const { feedObject, feedsPosts } = parserResonse;
+      watchedState.feeds = [...watchedState.feeds, feedObject];
+      watchedState.posts = [...watchedState.posts, feedsPosts];
+      console.log(watchedState);
+    })
+    .catch((err) => {  
       switch (err.type) {
         case 'url':
           watchedState.formProcess.error = 'url';
@@ -93,7 +88,7 @@ export default () => {
           console.log('#Validation Failed with error:', err.type);
           break;
         default:
-          throw Error (`Unknown type of Error: ${err.type}`);
+          throw Error (`Unknown type of Error: ${err.message}`);
       };
     });
   });
