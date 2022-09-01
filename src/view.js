@@ -26,17 +26,18 @@ const renderErrors = (errorType, input, feedback, i18n) => {
 
 const renderFeeds = (feeds, container, i18n) => {
   const card = document.createElement('div');
-  const title = document.createElement('div');
+  const cardBody = document.createElement('div');
   const h2 = document.createElement('h2');
   const ul = document.createElement('ul');
 
-  title.classList.add('card-body');
+  card.classList.add('card', 'border-0');
+  cardBody.classList.add('card-body');
   h2.classList.add('card-title', 'h4');
   h2.textContent = i18n.t('cards.feeds');
   ul.classList.add('list-group', 'border-0', 'rounded-0');
 
-  card.append(title);
-  title.append(h2);
+  card.append(cardBody, ul);
+  cardBody.append(h2);
 
   feeds.map((feed) => {
     const { title, description } = feed;
@@ -54,22 +55,60 @@ const renderFeeds = (feeds, container, i18n) => {
     p.textContent = description;
     li.append(h3, p);
   });
-  container.append(card, ul);
+  container.append(card);
+};
 
-  console.log(container, card)
+const renderPosts = (posts, container, i18n) => {
+  console.log('$$$', posts)
+  const card = document.createElement('div');
+  const cardBody = document.createElement('div');
+  const h2 = document.createElement('h2');
+  const ul = document.createElement('ul');
+
+  card.classList.add('card', 'border-0');
+  cardBody.classList.add('card-body');
+  h2.classList.add('card-title', 'h4');
+  h2.textContent = i18n.t('cards.posts');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+
+  card.append(cardBody, ul);
+  cardBody.append(h2);
+
+  posts[0].map((post) => {
+    const { id, title, description, url } = post;
+    console.log('POST INFO:', id, title, description, url)
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+
+    const a = document.createElement('a');
+    a.textContent = title;
+    a.dataset.id = id;
+    a.setAttribute('href', url);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener noreferrer');
+
+    const button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    button.dataset.id = id;
+    button.dataset.bsToggle = 'modal';
+    button.dataset.bsTarget = '#modal';
+    button.textContent = i18n.t('cards.button');
+
+    li.append(a, button);
+    ul.append(li);
+  });
+
+  container.append(card);
 };
 
 export default (state, path, i18next, elements) => {
-  console.log('view.path:', path);
+  console.log('view.path:', path, state.posts);
   const { input, submitBtn, feedback, feedsContainer, postsContainer } = elements;
 
   if (path === 'error') renderErrors(state.error, input, feedback, i18next);
   if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
-  if (path === 'feeds') {
-    console.log('Feeds coming:', state.feeds)
-    renderFeeds(state.feeds, feedsContainer, i18next);
-  }
-  //if (path === 'posts') renderPosts(state.posts, postsContainer, i18next);
-
+  if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next)
+  if (path === 'posts') renderPosts(state.posts, postsContainer, i18next);
 }
 

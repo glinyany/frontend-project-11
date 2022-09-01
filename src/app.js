@@ -2,7 +2,7 @@ import onChange from 'on-change';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import view from './view';
+import view from './view.js';
 import ru from './locales/ru.js';
 import parser from './parser.js';
 import 'bootstrap';

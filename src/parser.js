@@ -20,6 +20,8 @@ export default (response) => {
         url: post.querySelector('link').textContent,
       }
     })
+
+    console.log('FEEDS POSTS:', feedsPosts)
     
     return { feedObject, feedsPosts };
   } catch {
