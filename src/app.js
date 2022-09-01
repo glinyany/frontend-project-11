@@ -13,10 +13,19 @@ const makeRequest = (url) => {
 
   return axios.get(proxy)
     .then(({ data }) => {
-      console.log("$$$", data.contents);
       return data.contents;
     })
     .catch(() => { throw Error('errors.request'); });
+};
+
+const blockForm = (watchedState) => {
+  watchedState.formState.isBlocked = true;
+};
+
+const unlockForm = (watchedState, response) => {
+  watchedState.formState.isBlocked = false;
+  watchedState.error = 'null';
+  return response;
 };
 
 export default () => {
@@ -30,17 +39,16 @@ export default () => {
     input: document.getElementById('url-input'),
     submitBtn: document.querySelector('button[type="submit"]'),
     feedback: document.querySelector('.feedback'),
+    feedsContainer: document.querySelector('.feeds'),
+    postsContainer: document.querySelector('.posts'),
   };
   
   const state = {
     formState: {
       inputValue: '',
-      isValid: true, // unused rn
+      isBlocked: false,
     },
-    formProcess: {
-      status: null,
-      error: null,
-    },
+    err: null,
     feeds: [],
     posts: [],
   };
@@ -49,7 +57,7 @@ export default () => {
     view(state, path, i18next, elements);
   });
 
-  elements.form.addEventListener('submit', (e) => {
+  elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
   
     const formData = new FormData(e.target);
@@ -58,38 +66,24 @@ export default () => {
     const schema = yup
       .string()
       .url()
-      .required()
-      .notOneOf(state.feeds.map(feed => feed.link));
+      .notOneOf(state.feeds.map((feed) => feed.link))
+      .required();
 
     schema.validate(inputValue)
-    .then(() => {
-      watchedState.formState.inputValue = inputValue;
-      watchedState.formProcess.error = 'null';
-      watchedState.formProcess.status = 'working';
-    })
+    .then(() => watchedState.formState.inputValue = inputValue)
+    .then(() => blockForm(watchedState))
     .then(() => makeRequest(inputValue))
+    .then((response) => unlockForm(watchedState, response))
     .then((response) => parser(response))
     .then((parserResonse) => {
       const { feedObject, feedsPosts } = parserResonse;
+      feedObject.link = watchedState.formState.inputValue;
       watchedState.feeds = [...watchedState.feeds, feedObject];
       watchedState.posts = [...watchedState.posts, feedsPosts];
-      console.log(watchedState);
     })
-    .catch((err) => {  
-      switch (err.type) {
-        case 'url':
-          watchedState.formProcess.error = 'url';
-          watchedState.formProcess.status = 'failed';
-          console.log('#Validation Failed with error:', err.type);
-          break;
-        case 'notOneOf':
-          watchedState.formProcess.error = 'notUniq';
-          watchedState.formProcess.status = 'failed';
-          console.log('#Validation Failed with error:', err.type);
-          break;
-        default:
-          throw Error (`Unknown type of Error: ${err.message}`);
-      };
+    .catch((err) => { 
+      console.log('!catch:', err.type);
+      watchedState.error = err.type;
     });
   });
   // elements.container.addEventListener();

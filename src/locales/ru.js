@@ -4,7 +4,7 @@ const ru = {
     errors: {
       empty: 'Не должно быть пустым',
       url: 'Ссылка должна быть валидным URL',
-      notUniq: 'RSS уже существует',
+      notOneOf: 'RSS уже существует',
       parse: 'Ресурс не содержит валидный RSS',
       request: 'Ошибка сети',
     },
@@ -21,13 +21,3 @@ const ru = {
 };
 
 export default ru;
-
-/**
-trans: {
-      title: 'RSS агрегатор',
-      subTitle: 'Начните читать RSS сегодня! Это легко, это красиво.',
-      label: 'Ссылка RSS',
-      button: 'Добавить',
-      example: 'Пример: https://ru.hexlet.io/lessons.rss',
-    },
- */
