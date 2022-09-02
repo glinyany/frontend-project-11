@@ -20,26 +20,24 @@ const makeRequest = (url) => {
 };
 
 const updateData = (watchedState, parsedResponse, posts) => {
-  console.log('Updating data..');
-  const { feedsPosts } = parsedResponse; // Все посты(старые + новые)
+  const { feedsPosts } = parsedResponse;
+  const existingIds = []; 
 
-  const existingIds = []; // ID существующих постов
   posts.map(post => post.map(el => existingIds.push(el.id)))
-  console.log('__EXST POSTS__:\n', existingIds)
-
   const newPosts = feedsPosts.filter((post) => {
-    console.log(post.id, '***', existingIds);
     return !existingIds.includes(post.id)
   });
-  
-  console.log(`#New posts: ${newPosts.length}\n`, newPosts)
+
   if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts)
+
+  watchedState.refreshTime = watchedState.refreshTime + 1;
+  console.log('__EXST POSTS__:\n', existingIds, `\nNew posts:${newPosts.length}`, newPosts, '\nRefresh Times:', watchedState.refreshTime);
 };
 
 const refreshData = (watchedState, url, posts) => 
   Promise.resolve(url)
   .then(() => makeRequest(url))
-  .then((response) => parser(response)) // parse
+  .then((response) => parser(response)) 
   .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
   .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));
 
@@ -51,6 +49,22 @@ const unlockForm = (watchedState, response) => {
   watchedState.formState.isBlocked = false;
   watchedState.error = 'null';
   return response;
+};
+
+const addButtonListeners = (watchedState) => {
+  const container = document.querySelector('.posts');
+  const titles = container.querySelectorAll('a');
+  const buttons = container.querySelectorAll('button');
+  const els = [...titles, ...buttons];
+
+  els.forEach((el) => 
+    el.addEventListener('click', (e) => {
+      const postId = el.dataset.id;
+      watchedState.userClick.elementType = e.target.tagName;
+      watchedState.userClick.openedPostId = postId;
+      if (!watchedState.userClick.clickedElements.includes(postId)) watchedState.userClick.clickedElements.push(postId);
+      console.log('#Clicked elements list:', watchedState.userClick.clickedElements)
+  }));
 };
 
 export default () => {
@@ -76,6 +90,12 @@ export default () => {
     err: null,
     feeds: [],
     posts: [],
+    userClick: {
+      openedPostId: null,
+      elementType: null,
+      clickedElements: [],
+    },
+    refreshTime: 0,
   };
 
   const watchedState = onChange(state, (path) => {
@@ -105,20 +125,21 @@ export default () => {
       feedObject.link = watchedState.formState.inputValue;
       watchedState.feeds.push(feedObject);
       watchedState.posts.push(feedsPosts);
-      // watchedState.feeds = [...state.feeds, feedObject];
-      // watchedState.posts = [...state.posts, feedsPosts];
     })
-    .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts), 5000))
+    .then(() => {
+      console.log('add btns!!!')
+      addButtonListeners(watchedState)
+    })
+    .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
     .catch((err) => { 
       console.log('!catch:', err.type);
       watchedState.error = err.type;
     });
   });
-  // elements.container.addEventListener();
 };
 
 /**
+
 http://lorem-rss.herokuapp.com/feed?unit=second&interval=5
 https://ru.hexlet.io/lessons.rss
-
 */
