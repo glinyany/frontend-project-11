@@ -6,6 +6,7 @@ import view from './view.js';
 import ru from './locales/ru.js';
 import parser from './parser.js';
 import 'bootstrap';
+import _ from 'lodash';
 
 const makeRequest = (url) => {
   const encodedUrl = encodeURIComponent(url);
@@ -17,6 +18,30 @@ const makeRequest = (url) => {
     })
     .catch(() => { throw Error('errors.request'); });
 };
+
+const updateData = (watchedState, parsedResponse, posts) => {
+  console.log('Updating data..');
+  const { feedsPosts } = parsedResponse; // Все посты(старые + новые)
+
+  const existingIds = []; // ID существующих постов
+  posts.map(post => post.map(el => existingIds.push(el.id)))
+  console.log('__EXST POSTS__:\n', existingIds)
+
+  const newPosts = feedsPosts.filter((post) => {
+    console.log(post.id, '***', existingIds);
+    return !existingIds.includes(post.id)
+  });
+  
+  console.log(`#New posts: ${newPosts.length}\n`, newPosts)
+  if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts)
+};
+
+const refreshData = (watchedState, url, posts) => 
+  Promise.resolve(url)
+  .then(() => makeRequest(url))
+  .then((response) => parser(response)) // parse
+  .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
+  .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));
 
 const blockForm = (watchedState) => {
   watchedState.formState.isBlocked = true;
@@ -75,12 +100,15 @@ export default () => {
     .then(() => makeRequest(inputValue))
     .then((response) => unlockForm(watchedState, response))
     .then((response) => parser(response))
-    .then((parserResonse) => {
-      const { feedObject, feedsPosts } = parserResonse;
+    .then((parsedResponse) => {
+      const { feedObject, feedsPosts } = parsedResponse;
       feedObject.link = watchedState.formState.inputValue;
-      watchedState.feeds = [...watchedState.feeds, feedObject];
-      watchedState.posts = [...watchedState.posts, feedsPosts];
+      watchedState.feeds.push(feedObject);
+      watchedState.posts.push(feedsPosts);
+      // watchedState.feeds = [...state.feeds, feedObject];
+      // watchedState.posts = [...state.posts, feedsPosts];
     })
+    .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts), 5000))
     .catch((err) => { 
       console.log('!catch:', err.type);
       watchedState.error = err.type;
@@ -88,3 +116,9 @@ export default () => {
   });
   // elements.container.addEventListener();
 };
+
+/**
+http://lorem-rss.herokuapp.com/feed?unit=second&interval=5
+https://ru.hexlet.io/lessons.rss
+
+*/

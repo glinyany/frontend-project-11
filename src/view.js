@@ -25,6 +25,8 @@ const renderErrors = (errorType, input, feedback, i18n) => {
 };
 
 const renderFeeds = (feeds, container, i18n) => {
+  container.innerHTML = '';
+  console.log(container, 'container')
   const card = document.createElement('div');
   const cardBody = document.createElement('div');
   const h2 = document.createElement('h2');
@@ -59,7 +61,7 @@ const renderFeeds = (feeds, container, i18n) => {
 };
 
 const renderPosts = (posts, container, i18n) => {
-  console.log('$$$', posts)
+  container.innerHTML = '';
   const card = document.createElement('div');
   const cardBody = document.createElement('div');
   const h2 = document.createElement('h2');
@@ -73,10 +75,9 @@ const renderPosts = (posts, container, i18n) => {
 
   card.append(cardBody, ul);
   cardBody.append(h2);
-
-  posts[0].map((post) => {
+  posts.forEach((el) => el.map((post) => {
     const { id, title, description, url } = post;
-    console.log('POST INFO:', id, title, description, url)
+    // console.log('POST INFO:', id, title, description, url)
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
@@ -97,7 +98,7 @@ const renderPosts = (posts, container, i18n) => {
 
     li.append(a, button);
     ul.append(li);
-  });
+  }))
 
   container.append(card);
 };

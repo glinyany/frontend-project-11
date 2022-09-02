@@ -19,9 +19,7 @@ export default (response) => {
         description: post.querySelector('description').textContent,
         url: post.querySelector('link').textContent,
       }
-    })
-
-    console.log('FEEDS POSTS:', feedsPosts)
+    });
     
     return { feedObject, feedsPosts };
   } catch {
