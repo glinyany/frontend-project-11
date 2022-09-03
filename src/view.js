@@ -104,12 +104,7 @@ const renderPosts = (posts, container, i18n) => {
   container.append(card);
 };
 
-// export const renderOpenedPosts = (state) => {
-//   console.log('AS READ...', state.userClick.clickedElements)
-//   const element = document.querySelector(`[data-id="${state.userClick.openedPostId}"]`);
-//   element.classList.replace('fw-bold', 'fw-normal');
-//   // console.log('This el:', element, '\nstate:\n', state);
-// };
+
 const renderOpenedPosts = (state) => {
   state.userClick.clickedElements.map((id) => {
     const element = document.querySelector(`[data-id="${id}"]`);
@@ -144,9 +139,7 @@ export default (state, path, i18next, elements) => {
   if (path === 'posts') renderPosts(state.posts, postsContainer, i18next);
   if (path === 'refreshTime') renderOpenedPosts(state);
   if (path === 'userClick.clickedElements') {
-    if (state.userClick.elementType === 'BUTTON') {
-      renderModal(state);
-    }
+    if (state.userClick.elementType === 'BUTTON') renderModal(state);
     renderOpenedPosts(state);
   }
 };

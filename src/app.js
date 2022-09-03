@@ -39,6 +39,7 @@ const refreshData = (watchedState, url, posts) =>
   .then(() => makeRequest(url))
   .then((response) => parser(response)) 
   .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
+  .then(() => addButtonListeners(watchedState))
   .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));
 
 const blockForm = (watchedState) => {
@@ -126,10 +127,7 @@ export default () => {
       watchedState.feeds.push(feedObject);
       watchedState.posts.push(feedsPosts);
     })
-    .then(() => {
-      console.log('add btns!!!')
-      addButtonListeners(watchedState)
-    })
+    .then(() => addButtonListeners(watchedState))
     .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
     .catch((err) => { 
       console.log('!catch:', err.type);
@@ -139,7 +137,9 @@ export default () => {
 };
 
 /**
+links:
 
 http://lorem-rss.herokuapp.com/feed?unit=second&interval=5
 https://ru.hexlet.io/lessons.rss
+
 */
