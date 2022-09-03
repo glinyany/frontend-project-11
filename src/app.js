@@ -31,7 +31,7 @@ const updateData = (watchedState, parsedResponse, posts) => {
   if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts)
 
   watchedState.refreshTime = watchedState.refreshTime + 1;
-  console.log('__EXST POSTS__:\n', existingIds, `\nNew posts:${newPosts.length}`, newPosts, '\nRefresh Times:', watchedState.refreshTime);
+  //console.log('__EXST POSTS__:\n', existingIds, `\nNew posts:${newPosts.length}`, newPosts, '\nRefresh Times:', watchedState.refreshTime);
 };
 
 const refreshData = (watchedState, url, posts) => 
@@ -64,7 +64,7 @@ const addButtonListeners = (watchedState) => {
       watchedState.userClick.elementType = e.target.tagName;
       watchedState.userClick.openedPostId = postId;
       if (!watchedState.userClick.clickedElements.includes(postId)) watchedState.userClick.clickedElements.push(postId);
-      console.log('#Clicked elements list:', watchedState.userClick.clickedElements)
+      // console.log('#Clicked elements list:', watchedState.userClick.clickedElements)
   }));
 };
 
@@ -130,8 +130,8 @@ export default () => {
     .then(() => addButtonListeners(watchedState))
     .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
     .catch((err) => { 
-      console.log('!catch:', err.type);
-      watchedState.error = err.type;
+      console.log('!catch:', err.type, ', $error message:', err.message);
+      watchedState.error = err.message;
     });
   });
 };

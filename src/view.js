@@ -8,19 +8,38 @@ const buttonHandler = (isBlocked, input, button) => {
   }
 }
 
-const renderErrors = (errorType, input, feedback, i18n) => {
-  if (errorType === 'required') return;
-  if (errorType === 'null') {
+// const renderErrors = (errorType, input, feedback, i18n) => {
+//   if (errorType === 'required') return;
+//   if (errorType === 'null') {
+//     input.classList.remove('is-invalid');
+//     input.value = '';
+//     feedback.textContent = i18n.t('success');
+//     feedback.classList.replace('text-danger', 'text-success');
+//     input.focus();
+//     return;
+//   }
+//   input.classList.add('is-invalid');
+//   feedback.textContent = i18n.t(`errors.${errorType}`);
+//   feedback.classList.replace('text-success', 'text-danger');
+// };
+// Parsing ERROR!
+// 
+const renderErrors = (message, input, feedback, i18n) => {
+  if (message === 'null') {
     input.classList.remove('is-invalid');
     input.value = '';
     feedback.textContent = i18n.t('success');
     feedback.classList.replace('text-danger', 'text-success');
     input.focus();
     return;
+  } else {
+    input.classList.add('is-invalid');
+    feedback.classList.replace('text-success', 'text-danger');
+    console.log("############", message)
+    if (message === 'Parsing ERROR!') feedback.textContent = i18n.t('errors.parse');
+    if (message === 'this must be a valid URL') feedback.textContent = i18n.t('errors.url');
+    
   }
-  input.classList.add('is-invalid');
-  feedback.textContent = i18n.t(`errors.${errorType}`);
-  feedback.classList.replace('text-success', 'text-danger');
 };
 
 const renderFeeds = (feeds, container, i18n) => {
@@ -131,7 +150,7 @@ const renderModal = (state) => {
 };
 
 export default (state, path, i18next, elements) => {
-  console.log('view.path:', path, state);
+  console.log('#view.path:', path, '\nMessage:', state.error);
   const { input, submitBtn, feedback, feedsContainer, postsContainer } = elements;
   if (path === 'error') renderErrors(state.error, input, feedback, i18next);
   if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
