@@ -13,16 +13,16 @@ export default (response, i18next) => {
 
     const unparsedItems = Array.from(dom.querySelectorAll('item'));
     const feedsPosts = unparsedItems.map((post) => {
-      return {
+      const postObject = {
         id: post.querySelector('guid').textContent,
         title: post.querySelector('title').textContent,
         description: post.querySelector('description').textContent,
         url: post.querySelector('link').textContent,
-      }
+      };
+      return postObject;
     });
-    
     return { feedObject, feedsPosts };
   } catch {
     throw Error(i18next.t('errors.parse'));
   }
-}
+};

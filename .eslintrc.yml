@@ -6,4 +6,8 @@ overrides: []
 parserOptions:
   ecmaVersion: latest
   sourceType: module
-rules: {}
+rules:
+  {
+    "no-param-reassign": 0,
+    "import/extensions": ["error", "ignorePackages", { "js": "always" }],
+  }

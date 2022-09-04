@@ -1,43 +1,54 @@
+/* eslint-disable no-return-assign */
 import onChange from 'on-change';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
+import _ from 'lodash';
 import view from './view.js';
 import ru from './locales/ru.js';
 import parser from './parser.js';
 import 'bootstrap';
-import _ from 'lodash';
 
 const makeRequest = (url) => {
   const encodedUrl = encodeURIComponent(url);
   const proxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodedUrl}`;
 
   return axios.get(proxy)
-    .then(({ data }) => {
-      return data.contents;
-    })
+    .then(({ data }) => data.contents)
     .catch(() => { throw Error('errors.request'); });
 };
 
 const updateData = (watchedState, parsedResponse, posts) => {
   const { feedsPosts } = parsedResponse;
-  const existingIds = []; 
+  const existingIds = [];
 
-  posts.map(post => post.map(el => existingIds.push(el.id)))
-  const newPosts = feedsPosts.filter((post) => {
-    return !existingIds.includes(post.id)
-  });
+  posts.map((post) => post.map((el) => existingIds.push(el.id)));
+  const newPosts = feedsPosts.filter((post) => !existingIds.includes(post.id));
 
-  if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts)
+  if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts);
 
-  watchedState.refreshTime = watchedState.refreshTime + 1;
-  //console.log('__EXST POSTS__:\n', existingIds, `\nNew posts:${newPosts.length}`, newPosts, '\nRefresh Times:', watchedState.refreshTime);
+  watchedState.refreshTime += 1;
 };
 
-const refreshData = (watchedState, url, posts) => 
-  Promise.resolve(url)
+const addButtonListeners = (watchedState) => {
+  const container = document.querySelector('.posts');
+  const titles = container.querySelectorAll('a');
+  const buttons = container.querySelectorAll('button');
+  const els = [...titles, ...buttons];
+
+  els.forEach((el) => (el).addEventListener('click', (e) => {
+    const postId = el.dataset.id;
+    watchedState.userClick.elementType = e.target.tagName;
+    watchedState.userClick.openedPostId = postId;
+    if (!watchedState.userClick.clickedElements.includes(postId)) {
+      watchedState.userClick.clickedElements.push(postId);
+    }
+  }));
+};
+
+const refreshData = (watchedState, url, posts) => Promise.resolve(url)
   .then(() => makeRequest(url))
-  .then((response) => parser(response)) 
+  .then((response) => parser(response))
   .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
   .then(() => addButtonListeners(watchedState))
   .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));
@@ -52,26 +63,11 @@ const unlockForm = (watchedState, response) => {
   return response;
 };
 
-const addButtonListeners = (watchedState) => {
-  const container = document.querySelector('.posts');
-  const titles = container.querySelectorAll('a');
-  const buttons = container.querySelectorAll('button');
-  const els = [...titles, ...buttons];
-
-  els.forEach((el) => 
-    el.addEventListener('click', (e) => {
-      const postId = el.dataset.id;
-      watchedState.userClick.elementType = e.target.tagName;
-      watchedState.userClick.openedPostId = postId;
-      if (!watchedState.userClick.clickedElements.includes(postId)) watchedState.userClick.clickedElements.push(postId);
-  }));
-};
-
 export default () => {
   i18next.init({
     lng: 'ru',
     resources: { ru },
-  })
+  });
 
   const elements = {
     form: document.querySelector('.rss-form'),
@@ -81,7 +77,7 @@ export default () => {
     feedsContainer: document.querySelector('.feeds'),
     postsContainer: document.querySelector('.posts'),
   };
-  
+
   const state = {
     formState: {
       inputValue: '',
@@ -104,7 +100,7 @@ export default () => {
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData(e.target);
     const inputValue = formData.get('url').trim();
 
@@ -115,23 +111,23 @@ export default () => {
       .required();
 
     schema.validate(inputValue)
-    .then(() => watchedState.formState.inputValue = inputValue)
-    .then(() => blockForm(watchedState))
-    .then(() => makeRequest(inputValue))
-    .then((response) => unlockForm(watchedState, response))
-    .then((response) => parser(response, i18next))
-    .then((parsedResponse) => {
-      const { feedObject, feedsPosts } = parsedResponse;
-      feedObject.link = watchedState.formState.inputValue;
-      watchedState.feeds.push(feedObject);
-      watchedState.posts.push(feedsPosts);
-    })
-    .then(() => addButtonListeners(watchedState))
-    .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
-    .catch((err) => { 
-      console.log('!catch:', err.type, '\n$error message:', err.message);
-      watchedState.error = i18next.t(err.message);
-    });
+      .then(() => watchedState.formState.inputValue = inputValue)
+      .then(() => blockForm(watchedState))
+      .then(() => makeRequest(inputValue))
+      .then((response) => unlockForm(watchedState, response))
+      .then((response) => parser(response, i18next))
+      .then((parsedResponse) => {
+        const { feedObject, feedsPosts } = parsedResponse;
+        feedObject.link = watchedState.formState.inputValue;
+        watchedState.feeds.push(feedObject);
+        watchedState.posts.push(feedsPosts);
+      })
+      .then(() => addButtonListeners(watchedState))
+      .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
+      .catch((err) => {
+        console.log('!catch:', err.type, '\n$error message:', err.message);
+        watchedState.error = i18next.t(err.message);
+      });
   });
 };
 

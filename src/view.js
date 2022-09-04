@@ -6,7 +6,7 @@ const buttonHandler = (isBlocked, input, button) => {
     input.removeAttribute('readonly');
     button.removeAttribute('disabled');
   }
-}
+};
 
 const renderErrors = (value, input, feedback, i18n) => {
   if (value === 'null') {
@@ -86,7 +86,7 @@ const renderPosts = (posts, container, i18n) => {
     a.setAttribute('href', url);
     a.setAttribute('target', '_blank');
     a.setAttribute('rel', 'noopener noreferrer');
-    a.classList.add('fw-bold')
+    a.classList.add('fw-bold');
 
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
@@ -98,11 +98,10 @@ const renderPosts = (posts, container, i18n) => {
 
     li.append(a, button);
     ul.append(li);
-  }))
+  }));
 
   container.append(card);
 };
-
 
 const renderOpenedPosts = (state) => {
   state.userClick.clickedElements.map((id) => {
@@ -118,24 +117,25 @@ const renderModal = (state) => {
   const readFullBtn = footer.querySelector('a');
   const clickedPostId = state.userClick.openedPostId;
 
-  state.posts.forEach((arr) => 
-    arr.map((post) => {
-      if (post.id === clickedPostId) {
-        const { title, description, url } = post;
-        titleElement.textContent = title;
-        descriptionElement.textContent = description;
-        readFullBtn.setAttribute('href', url);
-      }
-    }))
+  state.posts.forEach((arr) => arr.map((post) => {
+    if (post.id === clickedPostId) {
+      const { title, description, url } = post;
+      titleElement.textContent = title;
+      descriptionElement.textContent = description;
+      readFullBtn.setAttribute('href', url);
+    }
+  }));
 };
 
 export default (state, path, value, i18next, elements) => {
   console.log('#view.path:', path, '\nvalue:', value, '\nMessage:', state);
-  const { input, submitBtn, feedback, feedsContainer, postsContainer } = elements;
+  const {
+    input, submitBtn, feedback, feedsContainer, postsContainer,
+  } = elements;
 
   if (path === 'error') renderErrors(value, input, feedback, i18next);
   if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
-  if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next)
+  if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
   if (path === 'posts') renderPosts(state.posts, postsContainer, i18next);
   if (path === 'refreshTime') renderOpenedPosts(state);
   if (path === 'userClick.clickedElements') {
