@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export default (response) => {
+export default (response, i18next) => {
   try {
     const parser = new DOMParser();
     const dom = parser.parseFromString(response, 'text/xml');
@@ -23,6 +23,6 @@ export default (response) => {
     
     return { feedObject, feedsPosts };
   } catch {
-    throw Error('Parsing ERROR!');
+    throw Error(i18next.t('errors.parse'));
   }
 }
