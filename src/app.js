@@ -64,7 +64,6 @@ const addButtonListeners = (watchedState) => {
       watchedState.userClick.elementType = e.target.tagName;
       watchedState.userClick.openedPostId = postId;
       if (!watchedState.userClick.clickedElements.includes(postId)) watchedState.userClick.clickedElements.push(postId);
-      // console.log('#Clicked elements list:', watchedState.userClick.clickedElements)
   }));
 };
 
@@ -88,7 +87,7 @@ export default () => {
       inputValue: '',
       isBlocked: false,
     },
-    err: null,
+    error: null,
     feeds: [],
     posts: [],
     userClick: {
@@ -99,8 +98,8 @@ export default () => {
     refreshTime: 0,
   };
 
-  const watchedState = onChange(state, (path) => {
-    view(state, path, i18next, elements);
+  const watchedState = onChange(state, (path, value) => {
+    view(state, path, value, i18next, elements);
   });
 
   elements.form.addEventListener('submit', async (e) => {
@@ -110,9 +109,9 @@ export default () => {
     const inputValue = formData.get('url').trim();
 
     const schema = yup
-      .string()
-      .url()
-      .notOneOf(state.feeds.map((feed) => feed.link))
+      .string('errors.empty')
+      .url('errors.url')
+      .notOneOf(state.feeds.map((feed) => feed.link), 'errors.exist')
       .required();
 
     schema.validate(inputValue)
@@ -130,8 +129,8 @@ export default () => {
     .then(() => addButtonListeners(watchedState))
     .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
     .catch((err) => { 
-      console.log('!catch:', err.type, ', $error message:', err.message);
-      watchedState.error = err.message;
+      console.log('!catch:', err.type, '\n$error message:', err.message);
+      watchedState.error = i18next.t(err.message);
     });
   });
 };
