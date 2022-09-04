@@ -39,7 +39,7 @@ const renderFeeds = (feeds, container, i18n) => {
   card.append(cardBody, ul);
   cardBody.append(h2);
 
-  feeds.map((feed) => {
+  feeds.forEach((feed) => {
     const { title, description } = feed;
 
     const li = document.createElement('li');
@@ -74,7 +74,7 @@ const renderPosts = (posts, container, i18n) => {
 
   card.append(cardBody, ul);
   cardBody.append(h2);
-  posts.forEach((el) => el.map((post) => {
+  posts.map((el) => el.forEach((post) => {
     const { id, title, url } = post;
 
     const li = document.createElement('li');
@@ -104,7 +104,7 @@ const renderPosts = (posts, container, i18n) => {
 };
 
 const renderOpenedPosts = (state) => {
-  state.userClick.clickedElements.map((id) => {
+  state.userClick.clickedElements.forEach((id) => {
     const element = document.querySelector(`[data-id="${id}"]`);
     element.classList.replace('fw-bold', 'fw-normal');
   });
@@ -117,7 +117,7 @@ const renderModal = (state) => {
   const readFullBtn = footer.querySelector('a');
   const clickedPostId = state.userClick.openedPostId;
 
-  state.posts.forEach((arr) => arr.map((post) => {
+  state.posts.map((arr) => arr.forEach((post) => {
     if (post.id === clickedPostId) {
       const { title, description, url } = post;
       titleElement.textContent = title;
@@ -128,7 +128,6 @@ const renderModal = (state) => {
 };
 
 export default (state, path, value, i18next, elements) => {
-  console.log('#view.path:', path, '\nvalue:', value, '\nMessage:', state);
   const {
     input, submitBtn, feedback, feedsContainer, postsContainer,
   } = elements;

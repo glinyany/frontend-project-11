@@ -125,7 +125,6 @@ export default () => {
       .then(() => addButtonListeners(watchedState))
       .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
       .catch((err) => {
-        console.log('!catch:', err.type, '\n$error message:', err.message);
         watchedState.error = i18next.t(err.message);
       });
   });
