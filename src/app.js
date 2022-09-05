@@ -7,7 +7,6 @@ import _ from 'lodash';
 import view from './view.js';
 import ru from './locales/ru.js';
 import parser from './parser.js';
-import 'bootstrap';
 
 const makeRequest = (url) => {
   const encodedUrl = encodeURIComponent(url);
