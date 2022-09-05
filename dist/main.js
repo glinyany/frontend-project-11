@@ -33411,7 +33411,6 @@ const ru = {
 
 
 
-// import 'bootstrap';
 
 const makeRequest = (url) => {
   const encodedUrl = encodeURIComponent(url);
@@ -33542,7 +33541,8 @@ https://ru.hexlet.io/lessons.rss
 */
 
 ;// CONCATENATED MODULE: ./src/index.js
-
+ // should i delete this?
+ // should i delete this?
 
 
 

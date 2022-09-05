@@ -20,8 +20,8 @@ const config = {
       template: 'index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles.css',
-      chunkFilename: 'styles.css',
+      filename: '[name].css',
+      chunkFilename: '[id].css',
     }),
   ],
   module: {
