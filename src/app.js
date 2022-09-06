@@ -25,32 +25,7 @@ const updateData = (watchedState, parsedResponse, posts) => {
   const newPosts = feedsPosts.filter((post) => !existingIds.includes(post.id));
 
   if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts);
-
-  watchedState.refreshTime += 1;
 };
-
-const addButtonListeners = (watchedState) => {
-  const container = document.querySelector('.posts');
-  const titles = container.querySelectorAll('a');
-  const buttons = container.querySelectorAll('button');
-  const els = [...titles, ...buttons];
-
-  els.forEach((el) => (el).addEventListener('click', (e) => {
-    const postId = el.dataset.id;
-    watchedState.userClick.elementType = e.target.tagName;
-    watchedState.userClick.openedPostId = postId;
-    if (!watchedState.userClick.clickedElements.includes(postId)) {
-      watchedState.userClick.clickedElements.push(postId);
-    }
-  }));
-};
-
-const refreshData = (watchedState, url, posts) => Promise.resolve(url)
-  .then(() => makeRequest(url))
-  .then((response) => parser(response))
-  .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
-  .then(() => addButtonListeners(watchedState))
-  .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));
 
 const blockForm = (watchedState) => {
   watchedState.formState.isBlocked = true;
@@ -58,7 +33,7 @@ const blockForm = (watchedState) => {
 
 const unlockForm = (watchedState, response) => {
   watchedState.formState.isBlocked = false;
-  watchedState.error = 'null';
+  watchedState.formState.error = 'null';
   return response;
 };
 
@@ -68,29 +43,35 @@ export default () => {
     resources: { ru },
   });
 
+  const form = document.querySelector('.rss-form');
+  const input = document.getElementById('url-input');
+  const submitBtn = document.querySelector('.px-sm-5');
+  const feedback = document.querySelector('.feedback');
+  const feedsContainer = document.querySelector('.feeds');
+  const postsContainer = document.querySelector('.posts');
+
   const elements = {
-    form: document.querySelector('.rss-form'),
-    input: document.getElementById('url-input'),
-    submitBtn: document.querySelector('button[type="submit"]'),
-    feedback: document.querySelector('.feedback'),
-    feedsContainer: document.querySelector('.feeds'),
-    postsContainer: document.querySelector('.posts'),
+    form,
+    input,
+    submitBtn,
+    feedback,
+    feedsContainer,
+    postsContainer,
   };
 
   const state = {
     formState: {
-      inputValue: '',
+      error: null,
       isBlocked: false,
     },
-    error: null,
+    postsProcess: {
+      openedModalId: null,
+      clickedElements: [],
+      error: null,
+    },
     feeds: [],
     posts: [],
-    userClick: {
-      openedPostId: null,
-      elementType: null,
-      clickedElements: [],
-    },
-    refreshTime: 0,
+    urls: [],
   };
 
   const watchedState = onChange(state, (path, value) => {
@@ -106,27 +87,46 @@ export default () => {
     const schema = yup
       .string('errors.empty')
       .url('errors.url')
-      .notOneOf(state.feeds.map((feed) => feed.link), 'errors.exist')
+      .notOneOf(state.urls, 'errors.exist')
       .required();
 
     schema.validate(inputValue)
-      .then(() => watchedState.formState.inputValue = inputValue)
       .then(() => blockForm(watchedState))
       .then(() => makeRequest(inputValue))
       .then((response) => unlockForm(watchedState, response))
       .then((response) => parser(response, i18next))
       .then((parsedResponse) => {
+        if (!state.urls.includes(inputValue)) state.urls.push(inputValue);
+        console.log('urls:', state.urls, '\nfeeds:', state.feeds);
         const { feedObject, feedsPosts } = parsedResponse;
         feedObject.link = watchedState.formState.inputValue;
         watchedState.feeds.push(feedObject);
         watchedState.posts.push(feedsPosts);
       })
-      .then(() => addButtonListeners(watchedState))
-      .then(() => setTimeout(refreshData(watchedState, inputValue, state.posts, state), 5000))
       .catch((err) => {
-        watchedState.error = i18next.t(err.message);
+        watchedState.formState.error = i18next.t(err.message);
       });
   });
+
+  elements.postsContainer.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
+      if (!watchedState.postsProcess.clickedElements.includes(e.target)) {
+        watchedState.postsProcess.clickedElements.push(e.target);
+        if (e.target.tagName === 'BUTTON') watchedState.postsProcess.openedModalId = e.target.dataset.id;
+      }
+    }
+  });
+
+  const getUpdatedPosts = () => {
+    const promises = state.urls.map((url) => makeRequest(url)
+      .then((response) => parser(response))
+      .then((parsedResponse) => updateData(watchedState, parsedResponse, state.posts))
+      .catch((err) => {
+        watchedState.postsProcess.error = i18next.t(err.message);
+      }));
+    Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(), 5000));
+  };
+  getUpdatedPosts();
 };
 
 /**
@@ -136,3 +136,26 @@ http://lorem-rss.herokuapp.com/feed?unit=second&interval=5
 https://ru.hexlet.io/lessons.rss
 
 */
+
+// const addButtonListeners = (watchedState) => {
+//   const container = document.querySelector('.posts');
+//   const titles = container.querySelectorAll('a');
+//   const buttons = container.querySelectorAll('button');
+//   const els = [...titles, ...buttons];
+
+//   els.forEach((el) => (el).addEventListener('click', (e) => {
+//     const postId = el.dataset.id;
+//     watchedState.postsProcess.elementType = e.target.tagName;
+//     watchedState.postsProcess.openedPostId = postId;
+//     if (!watchedState.postsProcess.clickedElements.includes(postId)) {
+//       watchedState.postsProcess.clickedElements.push(postId);
+//     }
+//   }));
+// };
+
+// const refreshData = (watchedState, url, posts) => Promise.resolve(url)
+//   .then(() => makeRequest(url))
+//   .then((response) => parser(response))
+//   .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
+//   .then(() => addButtonListeners(watchedState))
+//   .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));

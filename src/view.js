@@ -58,7 +58,16 @@ const renderFeeds = (feeds, container, i18n) => {
   container.append(card);
 };
 
-const renderPosts = (posts, container, i18n) => {
+const renderOpenedPosts = (state) => {
+  state.postsProcess.clickedElements.forEach((target) => {
+    console.log('RENDERING POSTS:', target.dataset.id);
+    const element = document.querySelector(`[data-id="${target.dataset.id}"]`);
+    element.classList.replace('fw-bold', 'fw-normal');
+  });
+};
+
+const renderPosts = (state, container, i18n) => {
+  const { posts } = state;
   container.innerHTML = '';
 
   const card = document.createElement('div');
@@ -101,21 +110,15 @@ const renderPosts = (posts, container, i18n) => {
   }));
 
   container.append(card);
+  renderOpenedPosts(state);
 };
 
-const renderOpenedPosts = (state) => {
-  state.userClick.clickedElements.forEach((id) => {
-    const element = document.querySelector(`[data-id="${id}"]`);
-    element.classList.replace('fw-bold', 'fw-normal');
-  });
-};
-
-const renderModal = (state) => {
+const renderModal = (state, value) => {
   const titleElement = document.querySelector('.modal-title');
   const descriptionElement = document.querySelector('.modal-body');
   const footer = document.querySelector('.modal-footer');
   const readFullBtn = footer.querySelector('a');
-  const clickedPostId = state.userClick.openedPostId;
+  const clickedPostId = value;
 
   state.posts.map((arr) => arr.forEach((post) => {
     if (post.id === clickedPostId) {
@@ -132,13 +135,10 @@ export default (state, path, value, i18next, elements) => {
     input, submitBtn, feedback, feedsContainer, postsContainer,
   } = elements;
 
-  if (path === 'error') renderErrors(value, input, feedback, i18next);
+  if (path === 'formState.error') renderErrors(value, input, feedback, i18next);
   if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
   if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
-  if (path === 'posts') renderPosts(state.posts, postsContainer, i18next);
-  if (path === 'refreshTime') renderOpenedPosts(state);
-  if (path === 'userClick.clickedElements') {
-    if (state.userClick.elementType === 'BUTTON') renderModal(state);
-    renderOpenedPosts(state);
-  }
+  if (path === 'posts') renderPosts(state, postsContainer, i18next);
+  if (path === 'postsProcess.clickedElements') renderOpenedPosts(state);
+  if (path === 'postsProcess.openedModalId') renderModal(state, value);
 };
