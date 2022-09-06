@@ -134,7 +134,7 @@ export default (state, path, value, i18next, elements) => {
     input, submitBtn, feedback, feedsContainer, postsContainer,
   } = elements;
 
-  if (path === 'formState.error') renderErrors(value, input, feedback, i18next);
+  if (path === 'formState.error' || path === 'postsProcess.error') renderErrors(value, input, feedback, i18next);
   if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
   if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
   if (path === 'posts') renderPosts(state, postsContainer, i18next);
