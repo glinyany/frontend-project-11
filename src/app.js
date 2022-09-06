@@ -97,7 +97,6 @@ export default () => {
       .then((response) => parser(response, i18next))
       .then((parsedResponse) => {
         if (!state.urls.includes(inputValue)) state.urls.push(inputValue);
-        console.log('urls:', state.urls, '\nfeeds:', state.feeds);
         const { feedObject, feedsPosts } = parsedResponse;
         feedObject.link = watchedState.formState.inputValue;
         watchedState.feeds.push(feedObject);
@@ -136,26 +135,3 @@ http://lorem-rss.herokuapp.com/feed?unit=second&interval=5
 https://ru.hexlet.io/lessons.rss
 
 */
-
-// const addButtonListeners = (watchedState) => {
-//   const container = document.querySelector('.posts');
-//   const titles = container.querySelectorAll('a');
-//   const buttons = container.querySelectorAll('button');
-//   const els = [...titles, ...buttons];
-
-//   els.forEach((el) => (el).addEventListener('click', (e) => {
-//     const postId = el.dataset.id;
-//     watchedState.postsProcess.elementType = e.target.tagName;
-//     watchedState.postsProcess.openedPostId = postId;
-//     if (!watchedState.postsProcess.clickedElements.includes(postId)) {
-//       watchedState.postsProcess.clickedElements.push(postId);
-//     }
-//   }));
-// };
-
-// const refreshData = (watchedState, url, posts) => Promise.resolve(url)
-//   .then(() => makeRequest(url))
-//   .then((response) => parser(response))
-//   .then((parsedResponse) => updateData(watchedState, parsedResponse, posts))
-//   .then(() => addButtonListeners(watchedState))
-//   .then((setTimeout(() => refreshData(watchedState, url, posts), 5000)));

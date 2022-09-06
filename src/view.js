@@ -60,7 +60,6 @@ const renderFeeds = (feeds, container, i18n) => {
 
 const renderOpenedPosts = (state) => {
   state.postsProcess.clickedElements.forEach((target) => {
-    console.log('RENDERING POSTS:', target.dataset.id);
     const element = document.querySelector(`[data-id="${target.dataset.id}"]`);
     element.classList.replace('fw-bold', 'fw-normal');
   });
