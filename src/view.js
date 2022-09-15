@@ -9,7 +9,7 @@ const buttonHandler = (isBlocked, input, button) => {
 };
 
 const renderErrors = (value, input, feedback, i18n) => {
-  if (value === null) {
+  if (value === 'no errors') {
     input.classList.remove('is-invalid');
     input.value = '';
     feedback.textContent = i18n.t('success');

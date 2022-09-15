@@ -34,7 +34,7 @@ const blockForm = (watchedState) => {
 
 const unlockForm = (watchedState, response) => {
   watchedState.formState.isBlocked = false;
-  watchedState.formState.error = null;
+  watchedState.formState.error = 'no errors';
   return response;
 };
 
