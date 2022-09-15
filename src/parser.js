@@ -1,12 +1,9 @@
-import _ from 'lodash';
-
-export default (response, i18next) => {
+export default (response) => {
   try {
     const parser = new DOMParser();
     const dom = parser.parseFromString(response, 'text/xml');
 
     const feedObject = {
-      id: _.uniqueId('feed_'),
       title: dom.querySelector('title').textContent,
       description: dom.querySelector('description').textContent,
     };
@@ -23,6 +20,33 @@ export default (response, i18next) => {
     });
     return { feedObject, feedsPosts };
   } catch {
-    throw Error(i18next.t('errors.parse'));
+    throw Error('errors.parse');
   }
 };
+
+// export default (response, i18next) => {
+//   try {
+//     const parser = new DOMParser();
+//     const dom = parser.parseFromString(response, 'text/xml');
+
+//     const feedObject = {
+//       id: _.uniqueId('feed_'),
+//       title: dom.querySelector('title').textContent,
+//       description: dom.querySelector('description').textContent,
+//     };
+
+//     const unparsedItems = Array.from(dom.querySelectorAll('item'));
+//     const feedsPosts = unparsedItems.map((post) => {
+//       const postObject = {
+//         id: post.querySelector('guid').textContent,
+//         title: post.querySelector('title').textContent,
+//         description: post.querySelector('description').textContent,
+//         url: post.querySelector('link').textContent,
+//       };
+//       return postObject;
+//     });
+//     return { feedObject, feedsPosts };
+//   } catch {
+//     throw Error(i18next.t('errors.parse'));
+//   }
+// };

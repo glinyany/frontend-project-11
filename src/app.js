@@ -95,27 +95,24 @@ export default () => {
       .then(() => blockForm(watchedState))
       .then(() => makeRequest(inputValue))
       .then((response) => unlockForm(watchedState, response))
-      .then((response) => parser(response, i18next))
+      .then((response) => parser(response))
       .then((parsedResponse) => {
         if (!watchedState.urls.includes(inputValue)) watchedState.urls.push(inputValue);
         const { feedObject, feedsPosts } = parsedResponse;
+        feedObject.id = _.uniqueId('feed_');
         feedObject.link = watchedState.formState.inputValue;
         watchedState.feeds.push(feedObject);
         watchedState.posts.push(feedsPosts);
       })
       .catch((err) => {
-        console.log('поймал ошибку:\n', err.message);
-        // watchedState.formState.error = i18next.t(err.message);
         watchedState.formState.error = err.message;
       });
   });
 
   elements.postsContainer.addEventListener('click', (e) => {
-    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
-      if (!watchedState.postsProcess.clickedElements.includes(e.target)) {
-        watchedState.postsProcess.clickedElements.push(e.target);
-        if (e.target.tagName === 'BUTTON') watchedState.postsProcess.openedModalId = e.target.dataset.id;
-      }
+    if (e.target.dataset.id) {
+      watchedState.postsProcess.clickedElements.push(e.target);
+      if (e.target.tagName === 'BUTTON') watchedState.postsProcess.openedModalId = e.target.dataset.id;
     }
   });
 
