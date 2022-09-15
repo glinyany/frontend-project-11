@@ -60,7 +60,7 @@ export default () => {
     postsContainer,
   };
 
-  const state = {
+  const initialState = {
     formState: {
       error: null,
       isBlocked: false,
@@ -75,8 +75,8 @@ export default () => {
     urls: [],
   };
 
-  const watchedState = onChange(state, (path, value) => {
-    view(state, path, value, i18next, elements);
+  const watchedState = onChange(initialState, (path, value) => {
+    view(initialState, path, value, i18next, elements);
   });
 
   elements.form.addEventListener('submit', async (e) => {
@@ -88,7 +88,7 @@ export default () => {
     const schema = yup
       .string('errors.empty')
       .url('errors.url')
-      .notOneOf(state.urls, 'errors.exist')
+      .notOneOf(watchedState.urls, 'errors.exist')
       .required();
 
     schema.validate(inputValue)
@@ -97,14 +97,16 @@ export default () => {
       .then((response) => unlockForm(watchedState, response))
       .then((response) => parser(response, i18next))
       .then((parsedResponse) => {
-        if (!state.urls.includes(inputValue)) state.urls.push(inputValue);
+        if (!watchedState.urls.includes(inputValue)) watchedState.urls.push(inputValue);
         const { feedObject, feedsPosts } = parsedResponse;
         feedObject.link = watchedState.formState.inputValue;
         watchedState.feeds.push(feedObject);
         watchedState.posts.push(feedsPosts);
       })
       .catch((err) => {
-        watchedState.formState.error = i18next.t(err.message);
+        console.log('поймал ошибку:\n', err.message);
+        // watchedState.formState.error = i18next.t(err.message);
+        watchedState.formState.error = err.message;
       });
   });
 
@@ -118,11 +120,11 @@ export default () => {
   });
 
   const getUpdatedPosts = () => {
-    const promises = state.urls.map((url) => makeRequest(url)
+    const promises = watchedState.urls.map((url) => makeRequest(url)
       .then((response) => parser(response))
-      .then((parsedResponse) => updateData(watchedState, parsedResponse, state.posts))
+      .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
       .catch((err) => {
-        watchedState.postsProcess.error = i18next.t(err.message);
+        watchedState.postsProcess.error = err.message;
       }));
     Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(), 5000));
   };
