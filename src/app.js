@@ -28,6 +28,15 @@ const updateData = (watchedState, parsedResponse, posts) => {
   if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts);
 };
 
+const getUpdatedPosts = (watchedState) => {
+  const promises = watchedState.urls.map((url) => makeRequest(url)
+    .then((response) => parser(response))
+    .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
+    .catch((err) => {
+      watchedState.postsProcess.error = err.message;
+    }));
+  Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(), 5000));
+};
 const blockForm = (watchedState) => {
   watchedState.formState.isBlocked = true;
 };
@@ -118,16 +127,7 @@ export default () => {
     }
   });
 
-  const getUpdatedPosts = () => {
-    const promises = watchedState.urls.map((url) => makeRequest(url)
-      .then((response) => parser(response))
-      .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
-      .catch((err) => {
-        watchedState.postsProcess.error = err.message;
-      }));
-    Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(), 5000));
-  };
-  getUpdatedPosts();
+  getUpdatedPosts(watchedState);
 };
 
 /**
