@@ -66,9 +66,11 @@ export default () => {
       isBlocked: false,
     },
     postsProcess: {
+      error: null,
+    },
+    uiState: {
       openedModalId: null,
       clickedElements: [],
-      error: null,
     },
     feeds: [],
     posts: [],
@@ -111,8 +113,8 @@ export default () => {
 
   elements.postsContainer.addEventListener('click', (e) => {
     if (e.target.dataset.id) {
-      watchedState.postsProcess.clickedElements.push(e.target);
-      if (e.target.tagName === 'BUTTON') watchedState.postsProcess.openedModalId = e.target.dataset.id;
+      watchedState.uiState.clickedElements.push(e.target);
+      if (e.target.tagName === 'BUTTON') watchedState.uiState.openedModalId = e.target.dataset.id;
     }
   });
 

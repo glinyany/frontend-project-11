@@ -59,7 +59,7 @@ const renderFeeds = (feeds, container, i18n) => {
 };
 
 const renderOpenedPosts = (state) => {
-  state.postsProcess.clickedElements.forEach((target) => {
+  state.uiState.clickedElements.forEach((target) => {
     const element = document.querySelector(`[data-id="${target.dataset.id}"]`);
     element.classList.replace('fw-bold', 'fw-normal');
   });
@@ -138,6 +138,6 @@ export default (state, path, value, i18next, elements) => {
   if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
   if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
   if (path === 'posts') renderPosts(state, postsContainer, i18next);
-  if (path === 'postsProcess.clickedElements') renderOpenedPosts(state);
-  if (path === 'postsProcess.openedModalId') renderModal(state, value);
+  if (path === 'uiState.clickedElements') renderOpenedPosts(state);
+  if (path === 'uiState.openedModalId') renderModal(state, value);
 };
