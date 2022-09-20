@@ -9,13 +9,27 @@ import ru from './locales/ru.js';
 import parser from './parser.js';
 import 'bootstrap';
 
+const getErrorCode = (e) => {
+  if (e.isParsingError) return 'errors.parse';
+  if (e.isAxiosError) return 'errors.request';
+  if (e.message === 'already exist') return 'errors.exist';
+  if (e.message === 'should be url') return 'errors.url';
+  if (e.message === 'empty') return 'errors.empty';
+
+  return 'unknown error';
+};
+
 const makeRequest = (url) => {
   const encodedUrl = encodeURIComponent(url);
   const proxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodedUrl}`;
 
   return axios.get(proxy)
     .then(({ data }) => data.contents)
-    .catch(() => { throw Error('errors.request'); });
+    .catch(() => {
+      const error = new Error('errors.request');
+      error.isAxiosError = true;
+      throw error;
+    });
 };
 
 const updateData = (watchedState, parsedResponse, posts) => {
@@ -35,7 +49,7 @@ const getUpdatedPosts = (watchedState) => {
     .then((response) => parser(response))
     .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
     .catch((err) => {
-      watchedState.postsProcess.error = err.message;
+      watchedState.loadingProcess.error = getErrorCode(err);
     }));
   Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(watchedState), 5000));
 };
@@ -77,18 +91,15 @@ export default () => {
       error: null,
       isBlocked: false,
     },
-    postsProcess: {
-      error: null,
-    },
     uiState: {
       openedModalId: null,
       clickedElements: [],
     },
+    loadingProcess: {
+      error: null,
+    },
     feeds: [],
     posts: [],
-    // loadingProcess: {
-    //   error: null,
-    // },
   };
 
   const watchedState = onChange(initialState, (path, value) => {
@@ -103,9 +114,9 @@ export default () => {
     const urls = watchedState.feeds.map((feed) => feed.link);
 
     const schema = yup
-      .string('errors.empty')
-      .url('errors.url')
-      .notOneOf(urls, 'errors.exist')
+      .string('empty')
+      .url('should be url')
+      .notOneOf(urls, 'already exist')
       .required();
 
     schema.validate(inputValue)
@@ -122,17 +133,7 @@ export default () => {
         watchedState.posts.push(feedsPosts);
       })
       .catch((err) => {
-        watchedState.formState.error = err.message;
-        // const getErrorCode = (e) => {
-        //   if (e.isParsingError) {
-        //     return 'noRss';
-        //   }
-        //   if (e.isAxiosError) {
-        //     return 'network';
-        //   }
-        //   return 'unknown';
-        // };
-        // watchedState.loadingProcess.error = getErrorCode(err);
+        watchedState.loadingProcess.error = getErrorCode(err);
       });
   });
 
