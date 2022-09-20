@@ -29,14 +29,17 @@ const updateData = (watchedState, parsedResponse, posts) => {
 };
 
 const getUpdatedPosts = (watchedState) => {
-  const promises = watchedState.urls.map((url) => makeRequest(url)
+  const urls = watchedState.feeds.map((feed) => feed.link);
+
+  const promises = urls.map((url) => makeRequest(url)
     .then((response) => parser(response))
     .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
     .catch((err) => {
       watchedState.postsProcess.error = err.message;
     }));
-  Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(), 5000));
+  Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(watchedState), 5000));
 };
+
 const blockForm = (watchedState) => {
   watchedState.formState.isBlocked = true;
 };
@@ -83,7 +86,9 @@ export default () => {
     },
     feeds: [],
     posts: [],
-    urls: [],
+    // loadingProcess: {
+    //   error: null,
+    // },
   };
 
   const watchedState = onChange(initialState, (path, value) => {
@@ -95,11 +100,12 @@ export default () => {
 
     const formData = new FormData(e.target);
     const inputValue = formData.get('url').trim();
+    const urls = watchedState.feeds.map((feed) => feed.link);
 
     const schema = yup
       .string('errors.empty')
       .url('errors.url')
-      .notOneOf(watchedState.urls, 'errors.exist')
+      .notOneOf(urls, 'errors.exist')
       .required();
 
     schema.validate(inputValue)
@@ -108,15 +114,25 @@ export default () => {
       .then((response) => unlockForm(watchedState, response))
       .then((response) => parser(response))
       .then((parsedResponse) => {
-        if (!watchedState.urls.includes(inputValue)) watchedState.urls.push(inputValue);
         const { feedObject, feedsPosts } = parsedResponse;
         feedObject.id = _.uniqueId('feed_');
-        feedObject.link = watchedState.formState.inputValue;
+        feedObject.link = inputValue;
+
         watchedState.feeds.push(feedObject);
         watchedState.posts.push(feedsPosts);
       })
       .catch((err) => {
         watchedState.formState.error = err.message;
+        // const getErrorCode = (e) => {
+        //   if (e.isParsingError) {
+        //     return 'noRss';
+        //   }
+        //   if (e.isAxiosError) {
+        //     return 'network';
+        //   }
+        //   return 'unknown';
+        // };
+        // watchedState.loadingProcess.error = getErrorCode(err);
       });
   });
 

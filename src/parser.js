@@ -11,7 +11,7 @@ export default (response) => {
     const unparsedItems = Array.from(dom.querySelectorAll('item'));
     const feedsPosts = unparsedItems.map((post) => {
       const postObject = {
-        id: post.querySelector('guid').textContent, //
+        id: post.querySelector('guid').textContent,
         title: post.querySelector('title').textContent,
         description: post.querySelector('description').textContent,
         url: post.querySelector('link').textContent,
