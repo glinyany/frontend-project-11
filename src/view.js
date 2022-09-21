@@ -9,17 +9,35 @@ const buttonHandler = (isBlocked, input, button) => {
 };
 
 const renderErrors = (value, input, feedback, i18n) => {
-  if (value === 'no errors') {
-    input.classList.remove('is-invalid');
-    input.value = '';
-    feedback.textContent = i18n.t('success');
-    feedback.classList.replace('text-danger', 'text-success');
-  } else {
-    input.classList.add('is-invalid');
-    feedback.classList.replace('text-success', 'text-danger');
-    feedback.textContent = i18n.t(value);
-  }
   input.focus();
+  switch (value) {
+    case true: {
+      input.classList.remove('is-invalid');
+      input.value = '';
+      feedback.textContent = i18n.t('success');
+      feedback.classList.replace('text-danger', 'text-success');
+      break;
+    }
+    case false: {
+      break;
+    }
+    default:
+      input.classList.add('is-invalid');
+      feedback.classList.replace('text-success', 'text-danger');
+      feedback.textContent = i18n.t(value);
+      break;
+  }
+  // if (value === 'no errors') {
+  //   input.classList.remove('is-invalid');
+  //   input.value = '';
+  //   feedback.textContent = i18n.t('success');
+  //   feedback.classList.replace('text-danger', 'text-success');
+  // } else {
+  //   input.classList.add('is-invalid');
+  //   feedback.classList.replace('text-success', 'text-danger');
+  //   feedback.textContent = i18n.t(value);
+  // }
+  // input.focus();
 };
 
 const renderFeeds = (feeds, container, i18n) => {
@@ -135,14 +153,14 @@ export default (state, path, value, i18next, elements) => {
   } = elements;
 
   switch (path) {
-    case 'formState.error' || 'loadingProcess.error': {
+    case 'formState.error': {
       renderErrors(value, input, feedback, i18next);
       break;
     }
-    // case 'loadingProcess.error': {
-    //   renderErrors(value, input, feedback, i18next);
-    //   break;
-    // }
+    case 'loadingProcess.error': {
+      renderErrors(value, input, feedback, i18next);
+      break;
+    }
     case 'formState.isBlocked': {
       buttonHandler(state.formState.isBlocked, input, submitBtn);
       break;

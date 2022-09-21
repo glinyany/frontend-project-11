@@ -56,11 +56,13 @@ const getUpdatedPosts = (watchedState) => {
 
 const blockForm = (watchedState) => {
   watchedState.formState.isBlocked = true;
+  watchedState.formState.isValid = false;
 };
 
 const unlockForm = (watchedState, response) => {
   watchedState.formState.isBlocked = false;
-  watchedState.formState.error = 'no errors';
+  watchedState.formState.isValid = true;
+  // watchedState.formState.error = 'no errors';
   return response;
 };
 
@@ -90,6 +92,7 @@ export default () => {
     formState: {
       error: null,
       isBlocked: false,
+      isValid: false,
     },
     uiState: {
       openedModalId: null,
