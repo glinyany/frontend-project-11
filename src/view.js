@@ -135,14 +135,14 @@ export default (state, path, value, i18next, elements) => {
   } = elements;
 
   switch (path) {
-    case 'formState.error': {
+    case 'formState.error' || 'loadingProcess.error': {
       renderErrors(value, input, feedback, i18next);
       break;
     }
-    case 'loadingProcess.error': {
-      renderErrors(value, input, feedback, i18next);
-      break;
-    }
+    // case 'loadingProcess.error': {
+    //   renderErrors(value, input, feedback, i18next);
+    //   break;
+    // }
     case 'formState.isBlocked': {
       buttonHandler(state.formState.isBlocked, input, submitBtn);
       break;
