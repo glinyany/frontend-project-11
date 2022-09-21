@@ -134,10 +134,44 @@ export default (state, path, value, i18next, elements) => {
     input, submitBtn, feedback, feedsContainer, postsContainer,
   } = elements;
 
-  if (path === 'formState.error' || path === 'loadingProcess.error') renderErrors(value, input, feedback, i18next);
-  if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
-  if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
-  if (path === 'posts') renderPosts(state, postsContainer, i18next);
-  if (path === 'uiState.clickedElements') renderOpenedPosts(state);
-  if (path === 'uiState.openedModalId') renderModal(state, value);
+  switch (path) {
+    case 'formState.error': {
+      renderErrors(value, input, feedback, i18next);
+      break;
+    }
+    case 'loadingProcess.error': {
+      renderErrors(value, input, feedback, i18next);
+      break;
+    }
+    case 'formState.isBlocked': {
+      buttonHandler(state.formState.isBlocked, input, submitBtn);
+      break;
+    }
+    case 'feeds': {
+      renderFeeds(state.feeds, feedsContainer, i18next);
+      break;
+    }
+    case 'posts': {
+      renderPosts(state, postsContainer, i18next);
+      break;
+    }
+    case 'uiState.clickedElements': {
+      renderOpenedPosts(state);
+      break;
+    }
+    case 'uiState.openedModalId': {
+      renderModal(state, value);
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+  // eslint-disable-next-line max-len
+  // if (path === 'formState.error' || path === 'loadingProcess.error') renderErrors(value, input, feedback, i18next);
+  // if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
+  // if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
+  // if (path === 'posts') renderPosts(state, postsContainer, i18next);
+  // if (path === 'uiState.clickedElements') renderOpenedPosts(state);
+  // if (path === 'uiState.openedModalId') renderModal(state, value);
 };

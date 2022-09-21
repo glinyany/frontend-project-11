@@ -24,12 +24,12 @@ const makeRequest = (url) => {
   const proxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodedUrl}`;
 
   return axios.get(proxy)
-    .then(({ data }) => data.contents)
-    .catch(() => {
-      const error = new Error('errors.request');
-      error.isAxiosError = true;
-      throw error;
-    });
+    .then(({ data }) => data.contents);
+  // .catch(() => {
+  //   const error = new Error('errors.request');
+  //   error.isAxiosError = true;
+  //   throw error;
+  // });
 };
 
 const updateData = (watchedState, parsedResponse, posts) => {
