@@ -161,6 +161,10 @@ export default (state, path, value, i18next, elements) => {
       renderErrors(value, input, feedback, i18next);
       break;
     }
+    case 'formState.isValid': {
+      renderErrors(value, input, feedback, i18next);
+      break;
+    }
     case 'formState.isBlocked': {
       buttonHandler(state.formState.isBlocked, input, submitBtn);
       break;
