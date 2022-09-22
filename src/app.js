@@ -25,11 +25,6 @@ const makeRequest = (url) => {
 
   return axios.get(proxy)
     .then(({ data }) => data.contents);
-  // .catch(() => {
-  //   const error = new Error('errors.request');
-  //   error.isAxiosError = true;
-  //   throw error;
-  // });
 };
 
 const updateData = (watchedState, parsedResponse, posts) => {
@@ -62,7 +57,6 @@ const blockForm = (watchedState) => {
 const unlockForm = (watchedState, response) => {
   watchedState.formState.isBlocked = false;
   watchedState.formState.isValid = true;
-  // watchedState.formState.error = 'no errors';
   return response;
 };
 
