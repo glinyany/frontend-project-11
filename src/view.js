@@ -27,17 +27,6 @@ const renderErrors = (value, input, feedback, i18n) => {
       feedback.textContent = i18n.t(value);
       break;
   }
-  // if (value === 'no errors') {
-  //   input.classList.remove('is-invalid');
-  //   input.value = '';
-  //   feedback.textContent = i18n.t('success');
-  //   feedback.classList.replace('text-danger', 'text-success');
-  // } else {
-  //   input.classList.add('is-invalid');
-  //   feedback.classList.replace('text-success', 'text-danger');
-  //   feedback.textContent = i18n.t(value);
-  // }
-  // input.focus();
 };
 
 const renderFeeds = (feeds, container, i18n) => {
@@ -189,11 +178,4 @@ export default (state, path, value, i18next, elements) => {
       break;
     }
   }
-  // eslint-disable-next-line max-len
-  // if (path === 'formState.error' || path === 'loadingProcess.error') renderErrors(value, input, feedback, i18next);
-  // if (path === 'formState.isBlocked') buttonHandler(state.formState.isBlocked, input, submitBtn);
-  // if (path === 'feeds') renderFeeds(state.feeds, feedsContainer, i18next);
-  // if (path === 'posts') renderPosts(state, postsContainer, i18next);
-  // if (path === 'uiState.clickedElements') renderOpenedPosts(state);
-  // if (path === 'uiState.openedModalId') renderModal(state, value);
 };
