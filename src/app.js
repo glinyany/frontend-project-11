@@ -51,7 +51,6 @@ const getUpdatedPosts = (watchedState) => {
 
 const blockForm = (watchedState) => {
   watchedState.loadingProcess.isLoading = true;
-  // watchedState.formState.isBlocked = true;
   watchedState.formState.isValid = false;
 };
 
@@ -86,7 +85,6 @@ export default () => {
   const initialState = {
     formState: {
       error: null,
-      // isBlocked: false,
       isValid: false,
     },
     uiState: {
