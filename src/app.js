@@ -50,12 +50,13 @@ const getUpdatedPosts = (watchedState) => {
 };
 
 const blockForm = (watchedState) => {
-  watchedState.formState.isBlocked = true;
+  watchedState.loadingProcess.isLoading = true;
+  // watchedState.formState.isBlocked = true;
   watchedState.formState.isValid = false;
 };
 
 const unlockForm = (watchedState, response) => {
-  watchedState.formState.isBlocked = false;
+  watchedState.loadingProcess.isLoading = false;
   watchedState.formState.isValid = true;
   return response;
 };
@@ -85,7 +86,7 @@ export default () => {
   const initialState = {
     formState: {
       error: null,
-      isBlocked: false,
+      // isBlocked: false,
       isValid: false,
     },
     uiState: {
@@ -94,6 +95,7 @@ export default () => {
     },
     loadingProcess: {
       error: null,
+      isLoading: false,
     },
     feeds: [],
     posts: [],
