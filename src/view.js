@@ -1,15 +1,30 @@
-const buttonHandler = (isLoading, input, button) => {
-  if (isLoading) {
-    input.setAttribute('readonly', '');
-    button.setAttribute('disabled', '');
-  } else {
-    input.removeAttribute('readonly');
-    button.removeAttribute('disabled');
+const buttonHandler = (status, input, button) => {
+  switch (status) {
+    case 'loading':
+      input.setAttribute('readonly', '');
+      button.setAttribute('disabled', '');
+      break;
+    case 'filling':
+      input.removeAttribute('readonly');
+      button.removeAttribute('disabled');
+      break;
+    case 'failed':
+      input.classList.add('is-invalid');
+      break;
+    default:
+      break;
   }
+
+  // if (isLoading) {
+  //   input.setAttribute('readonly', '');
+  //   button.setAttribute('disabled', '');
+  // } else {
+  //   input.removeAttribute('readonly');
+  //   button.removeAttribute('disabled');
+  // }
 };
 
 const renderErrors = (value, input, feedback, i18n) => {
-  console.log('###', value);
   input.focus();
   switch (value) {
     case true: {
@@ -23,7 +38,7 @@ const renderErrors = (value, input, feedback, i18n) => {
       break;
     }
     default:
-      input.classList.add('is-invalid');
+      // input.classList.add('is-invalid');
       feedback.classList.replace('text-success', 'text-danger');
       feedback.textContent = i18n.t(`errors.${value}`);
       break;
@@ -155,8 +170,8 @@ export default (state, path, value, i18next, elements) => {
       renderErrors(value, input, feedback, i18next);
       break;
     }
-    case 'loadingProcess.isLoading': {
-      buttonHandler(state.loadingProcess.isLoading, input, submitBtn);
+    case 'loadingProcess.status': {
+      buttonHandler(state.loadingProcess.status, input, submitBtn);
       break;
     }
     case 'feeds': {
