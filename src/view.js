@@ -9,6 +9,7 @@ const buttonHandler = (isLoading, input, button) => {
 };
 
 const renderErrors = (value, input, feedback, i18n) => {
+  console.log('###', value);
   input.focus();
   switch (value) {
     case true: {
@@ -24,7 +25,7 @@ const renderErrors = (value, input, feedback, i18n) => {
     default:
       input.classList.add('is-invalid');
       feedback.classList.replace('text-success', 'text-danger');
-      feedback.textContent = i18n.t(value);
+      feedback.textContent = i18n.t(`errors.${value}`);
       break;
   }
 };

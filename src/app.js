@@ -10,13 +10,10 @@ import parser from './parser.js';
 import 'bootstrap';
 
 const getErrorCode = (e) => {
-  if (e.isParsingError) return 'errors.parse';
-  if (e.isAxiosError) return 'errors.request';
-  if (e.message === 'already exist') return 'errors.exist';
-  if (e.message === 'should be url') return 'errors.url';
-  if (e.message === 'empty') return 'errors.empty';
+  if (e.isParsingError) return 'noRss';
+  if (e.isAxiosError) return 'network';
 
-  return 'unknown error';
+  return e.message;
 };
 
 const makeRequest = (url) => {
@@ -111,9 +108,9 @@ export default () => {
     const urls = watchedState.feeds.map((feed) => feed.link);
 
     const schema = yup
-      .string('empty')
-      .url('should be url')
-      .notOneOf(urls, 'already exist')
+      .string('required')
+      .url('notUrl')
+      .notOneOf(urls, 'exist')
       .required();
 
     schema.validate(inputValue)
