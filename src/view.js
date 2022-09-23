@@ -14,14 +14,6 @@ const buttonHandler = (status, input, button) => {
     default:
       break;
   }
-
-  // if (isLoading) {
-  //   input.setAttribute('readonly', '');
-  //   button.setAttribute('disabled', '');
-  // } else {
-  //   input.removeAttribute('readonly');
-  //   button.removeAttribute('disabled');
-  // }
 };
 
 const renderErrors = (value, input, feedback, i18n) => {
@@ -38,7 +30,6 @@ const renderErrors = (value, input, feedback, i18n) => {
       break;
     }
     default:
-      // input.classList.add('is-invalid');
       feedback.classList.replace('text-success', 'text-danger');
       feedback.textContent = i18n.t(`errors.${value}`);
       break;

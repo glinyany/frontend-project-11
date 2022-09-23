@@ -47,13 +47,11 @@ const getUpdatedPosts = (watchedState) => {
 };
 
 const blockForm = (watchedState) => {
-  // watchedState.loadingProcess.isLoading = true;
   watchedState.loadingProcess.status = 'loading';
   watchedState.formState.isValid = false;
 };
 
 const unlockForm = (watchedState, response) => {
-  // watchedState.loadingProcess.isLoading = false;
   watchedState.loadingProcess.status = 'filling';
   watchedState.formState.isValid = true;
   return response;
@@ -92,8 +90,7 @@ export default () => {
     },
     loadingProcess: {
       error: null,
-      status: 'idle', // idle, loading, filling, failed
-      // isLoading: false,
+      status: 'idle',
     },
     feeds: [],
     posts: [],
@@ -130,7 +127,7 @@ export default () => {
         watchedState.posts.push(feedsPosts);
       })
       .catch((err) => {
-        watchedState.loadingProcess.status = 'failed'; //
+        watchedState.loadingProcess.status = 'failed';
         watchedState.loadingProcess.error = getErrorCode(err);
       });
   });
