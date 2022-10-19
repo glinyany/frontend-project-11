@@ -34,12 +34,26 @@ const updateData = (watchedState, parsedResponse, posts) => {
   if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts);
 };
 
+// const getUpdatedPosts = (watchedState) => {
+//   const urls = watchedState.feeds.map((feed) => feed.link);
+
+//   const promises = urls.map((url) => makeRequest(url)
+//     .then((response) => parser(response))
+//     .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
+//     .catch((err) => {
+//       watchedState.loadingProcess.error = getErrorCode(err);
+//     }));
+//   Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(watchedState), 5000));
+// };
+
 const getUpdatedPosts = (watchedState) => {
   const urls = watchedState.feeds.map((feed) => feed.link);
 
   const promises = urls.map((url) => makeRequest(url)
-    .then((response) => parser(response))
-    .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
+    .then((response) => {
+      const parsedResponse = parser(response);
+      return updateData(watchedState, parsedResponse, watchedState.posts);
+    })
     .catch((err) => {
       watchedState.loadingProcess.error = getErrorCode(err);
     }));
