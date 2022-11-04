@@ -28,23 +28,11 @@ const updateData = (watchedState, parsedResponse, posts) => {
   const { feedsPosts } = parsedResponse;
   const existingIds = [];
 
-  posts.map((post) => post.map((el) => existingIds.push(el.id)));
+  posts.map((post) => existingIds.push(post.id));
   const newPosts = feedsPosts.filter((post) => !existingIds.includes(post.id));
 
-  if (!_.isEmpty(newPosts)) watchedState.posts.push(newPosts);
+  if (!_.isEmpty(newPosts)) watchedState.posts = [...watchedState.posts, ...newPosts];
 };
-
-// const getUpdatedPosts = (watchedState) => {
-//   const urls = watchedState.feeds.map((feed) => feed.link);
-
-//   const promises = urls.map((url) => makeRequest(url)
-//     .then((response) => parser(response))
-//     .then((parsedResponse) => updateData(watchedState, parsedResponse, watchedState.posts))
-//     .catch((err) => {
-//       watchedState.loadingProcess.error = getErrorCode(err);
-//     }));
-//   Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(watchedState), 5000));
-// };
 
 const getUpdatedPosts = (watchedState) => {
   const urls = watchedState.feeds.map((feed) => feed.link);
@@ -58,17 +46,6 @@ const getUpdatedPosts = (watchedState) => {
       watchedState.loadingProcess.error = getErrorCode(err);
     }));
   Promise.all(promises).finally(() => setTimeout(() => getUpdatedPosts(watchedState), 5000));
-};
-
-const blockForm = (watchedState) => {
-  watchedState.loadingProcess.status = 'loading';
-  watchedState.formState.isValid = false;
-};
-
-const unlockForm = (watchedState, response) => {
-  watchedState.loadingProcess.status = 'filling';
-  watchedState.formState.isValid = true;
-  return response;
 };
 
 export default () => {
@@ -128,17 +105,23 @@ export default () => {
       .required();
 
     schema.validate(inputValue)
-      .then(() => blockForm(watchedState))
-      .then(() => makeRequest(inputValue))
-      .then((response) => unlockForm(watchedState, response))
-      .then((response) => parser(response))
+      .then(() => {
+        watchedState.loadingProcess.status = 'loading';
+        watchedState.formState.isValid = false;
+        return makeRequest(inputValue);
+      })
+      .then((response) => {
+        watchedState.loadingProcess.status = 'filling';
+        watchedState.formState.isValid = true;
+        return parser(response);
+      })
       .then((parsedResponse) => {
         const { feedObject, feedsPosts } = parsedResponse;
         feedObject.id = _.uniqueId('feed_');
         feedObject.link = inputValue;
 
         watchedState.feeds.push(feedObject);
-        watchedState.posts.push(feedsPosts);
+        watchedState.posts = [...watchedState.posts, ...feedsPosts];
       })
       .catch((err) => {
         watchedState.loadingProcess.status = 'failed';

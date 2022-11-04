@@ -96,7 +96,8 @@ const renderPosts = (state, container, i18n) => {
 
   card.append(cardBody, ul);
   cardBody.append(h2);
-  posts.map((el) => el.forEach((post) => {
+
+  posts.forEach((post) => {
     const { id, title, url } = post;
 
     const li = document.createElement('li');
@@ -120,7 +121,7 @@ const renderPosts = (state, container, i18n) => {
 
     li.append(a, button);
     ul.append(li);
-  }));
+  });
 
   container.append(card);
   renderOpenedPosts(state);
@@ -131,16 +132,12 @@ const renderModal = (state, value) => {
   const descriptionElement = document.querySelector('.modal-body');
   const footer = document.querySelector('.modal-footer');
   const readFullBtn = footer.querySelector('a');
-  const clickedPostId = value;
 
-  state.posts.map((arr) => arr.forEach((post) => {
-    if (post.id === clickedPostId) {
-      const { title, description, url } = post;
-      titleElement.textContent = title;
-      descriptionElement.textContent = description;
-      readFullBtn.setAttribute('href', url);
-    }
-  }));
+  const clickedElement = state.posts.find((post) => post.id === value);
+  const { title, description, url } = clickedElement;
+  titleElement.textContent = title;
+  descriptionElement.textContent = description;
+  readFullBtn.setAttribute('href', url);
 };
 
 export default (state, path, value, i18next, elements) => {

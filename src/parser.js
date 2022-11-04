@@ -22,6 +22,7 @@ export default (response) => {
       description: post.querySelector('description').textContent,
       url: post.querySelector('link').textContent,
     };
+
     return postObject;
   });
   return { feedObject, feedsPosts };
