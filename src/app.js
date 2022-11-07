@@ -113,16 +113,22 @@ export default () => {
       .then((response) => {
         watchedState.loadingProcess.status = 'filling';
         watchedState.formState.isValid = true;
-        return parser(response);
-      })
-      .then((parsedResponse) => {
-        const { feedObject, feedsPosts } = parsedResponse;
+        // const parsedResponse = parser(response);
+        const { feedObject, feedsPosts } = parser(response);
         feedObject.id = _.uniqueId('feed_');
         feedObject.link = inputValue;
 
         watchedState.feeds.push(feedObject);
         watchedState.posts = [...watchedState.posts, ...feedsPosts];
       })
+      // .then((parsedResponse) => {
+      //   const { feedObject, feedsPosts } = parsedResponse;
+      //   feedObject.id = _.uniqueId('feed_');
+      //   feedObject.link = inputValue;
+
+      //   watchedState.feeds.push(feedObject);
+      //   watchedState.posts = [...watchedState.posts, ...feedsPosts];
+      // })
       .catch((err) => {
         watchedState.loadingProcess.status = 'failed';
         watchedState.loadingProcess.error = getErrorCode(err);
