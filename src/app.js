@@ -120,7 +120,6 @@ export default () => {
         feedObject.link = inputValue;
 
         feedsPosts.forEach((post) => post.id = _.uniqueId('post_'));
-        console.log('after:', feedsPosts);
 
         watchedState.feeds.push(feedObject);
         watchedState.posts = [...watchedState.posts, ...feedsPosts];
