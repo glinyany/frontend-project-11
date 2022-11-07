@@ -26,10 +26,11 @@ const makeRequest = (url) => {
 
 const updateData = (watchedState, parsedResponse, posts) => {
   const { feedsPosts } = parsedResponse;
-  const existingIds = [];
 
-  posts.map((post) => existingIds.push(post.id));
-  const newPosts = feedsPosts.filter((post) => !existingIds.includes(post.id));
+  const existingUrls = posts.map((post) => post.url);
+  const newPosts = feedsPosts.filter((newPost) => !existingUrls.includes(newPost.url));
+
+  newPosts.forEach((post) => post.id = _.uniqueId('post_'));
 
   if (!_.isEmpty(newPosts)) watchedState.posts = [...watchedState.posts, ...newPosts];
 };
@@ -113,22 +114,17 @@ export default () => {
       .then((response) => {
         watchedState.loadingProcess.status = 'filling';
         watchedState.formState.isValid = true;
-        // const parsedResponse = parser(response);
+
         const { feedObject, feedsPosts } = parser(response);
         feedObject.id = _.uniqueId('feed_');
         feedObject.link = inputValue;
 
+        feedsPosts.forEach((post) => post.id = _.uniqueId('post_'));
+        console.log('after:', feedsPosts);
+
         watchedState.feeds.push(feedObject);
         watchedState.posts = [...watchedState.posts, ...feedsPosts];
       })
-      // .then((parsedResponse) => {
-      //   const { feedObject, feedsPosts } = parsedResponse;
-      //   feedObject.id = _.uniqueId('feed_');
-      //   feedObject.link = inputValue;
-
-      //   watchedState.feeds.push(feedObject);
-      //   watchedState.posts = [...watchedState.posts, ...feedsPosts];
-      // })
       .catch((err) => {
         watchedState.loadingProcess.status = 'failed';
         watchedState.loadingProcess.error = getErrorCode(err);
